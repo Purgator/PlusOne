@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const { buildAlias, isValidEmail } = globalThis.PlusAlias;
+  const { DEFAULTS, buildAlias, isValidEmail } = globalThis.PlusAlias;
 
   const emailInput = document.getElementById("email");
   const saveBtn = document.getElementById("save");
@@ -13,14 +13,37 @@
   const fillStatus = document.getElementById("fill-status");
   const shortcutEl = document.getElementById("shortcut");
   const shortcutsLink = document.getElementById("shortcuts-link");
+  const patternBox = document.getElementById("pattern-box");
+  const patternInput = document.getElementById("customPattern");
+  const formatPreview = document.getElementById("format-preview");
+  const randomNote = document.getElementById("random-note");
+  const tagExtraSelect = document.getElementById("tagExtra");
+  const separatorSelect = document.getElementById("separator");
+  const styleRadios = Array.from(document.querySelectorAll('input[name="tagStyle"]'));
+  const toggles = ["bubbleEnabled", "shortcutEnabled", "contextMenuEnabled"].map(
+    (id) => document.getElementById(id)
+  );
 
+  let settings = { ...DEFAULTS };
   let currentTab = null;
+  let currentHostname = "";
 
   init();
 
   async function init() {
-    const { email } = await chrome.storage.sync.get({ email: "" });
-    emailInput.value = email;
+    settings = await chrome.storage.sync.get(DEFAULTS);
+
+    // Populate controls from stored settings.
+    emailInput.value = settings.email;
+    patternInput.value = settings.customPattern;
+    tagExtraSelect.value = settings.tagExtra;
+    separatorSelect.value = settings.separator;
+    for (const radio of styleRadios) {
+      radio.checked = radio.value === settings.tagStyle;
+    }
+    for (const box of toggles) {
+      box.checked = Boolean(settings[box.id]);
+    }
 
     // Show the actual shortcut currently bound to the command.
     const commands = await chrome.commands.getAll();
@@ -29,45 +52,91 @@
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     currentTab = tab || null;
-    refreshSitePreview();
-  }
-
-  function refreshSitePreview() {
-    const email = emailInput.value.trim();
-    let hostname = "";
     try {
       const url = new URL(currentTab?.url || "");
-      if (["http:", "https:"].includes(url.protocol)) hostname = url.hostname;
+      if (["http:", "https:"].includes(url.protocol)) currentHostname = url.hostname;
     } catch {
       /* no usable tab URL (chrome:// page, options tab...) */
     }
 
-    if (email && isValidEmail(email) && hostname) {
-      aliasEl.textContent = buildAlias(email, hostname);
+    render();
+  }
+
+  // --- Rendering -----------------------------------------------------------
+
+  function render() {
+    const email = emailInput.value.trim();
+    const validEmail = email && isValidEmail(email);
+
+    // Per-site preview + fill button
+    if (validEmail && currentHostname) {
+      aliasEl.textContent = buildAlias(email, currentHostname, settings);
       siteSection.hidden = false;
     } else {
       siteSection.hidden = true;
     }
+
+    // Format example: use the real site when available, a classic otherwise.
+    const exampleHost = currentHostname || "music.amazon.com";
+    const exampleEmail = validEmail ? email : "you@gmail.com";
+    formatPreview.textContent = buildAlias(exampleEmail, exampleHost, settings);
+
+    patternBox.hidden = settings.tagStyle !== "custom";
+    randomNote.hidden = !(
+      settings.tagExtra === "random" ||
+      (settings.tagStyle === "custom" && settings.customPattern.includes("{random}"))
+    );
   }
 
-  saveBtn.addEventListener("click", save);
+  // --- Auto-saved options --------------------------------------------------
+
+  async function saveSetting(patch) {
+    Object.assign(settings, patch);
+    await chrome.storage.sync.set(patch);
+    render();
+  }
+
+  for (const radio of styleRadios) {
+    radio.addEventListener("change", () => {
+      if (radio.checked) saveSetting({ tagStyle: radio.value });
+    });
+  }
+  patternInput.addEventListener("input", () => {
+    saveSetting({ customPattern: patternInput.value.trim() || "{name}" });
+  });
+  tagExtraSelect.addEventListener("change", () => {
+    saveSetting({ tagExtra: tagExtraSelect.value });
+  });
+  separatorSelect.addEventListener("change", () => {
+    saveSetting({ separator: separatorSelect.value });
+  });
+  for (const box of toggles) {
+    box.addEventListener("change", () => {
+      saveSetting({ [box.id]: box.checked });
+    });
+  }
+
+  // --- Email (explicit save) -------------------------------------------------
+
+  saveBtn.addEventListener("click", saveEmail);
   emailInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") save();
+    if (e.key === "Enter") saveEmail();
   });
   emailInput.addEventListener("input", () => {
     setStatus(saveStatus, "", "");
   });
 
-  async function save() {
+  async function saveEmail() {
     const email = emailInput.value.trim();
     if (!isValidEmail(email)) {
       setStatus(saveStatus, "Please enter a valid email address.", "error");
       return;
     }
-    await chrome.storage.sync.set({ email });
+    await saveSetting({ email });
     setStatus(saveStatus, "Saved! You're all set.", "ok");
-    refreshSitePreview();
   }
+
+  // --- Fill button -----------------------------------------------------------
 
   fillBtn.addEventListener("click", async () => {
     if (!currentTab?.id) return;
