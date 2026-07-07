@@ -80,6 +80,16 @@
       <h2>Fill triggers</h2>
       <label class="toggle"><input type="checkbox" id="bubbleEnabled" />
         Suggestion bubble when you click an email field</label>
+      <div class="row indent">
+        <label for="bubblePosition">Bubble position</label>
+        <select id="bubblePosition">
+          <option value="below">Below the field</option>
+          <option value="above">Above the field</option>
+          <option value="right">Right of the field</option>
+        </select>
+      </div>
+      <p class="hint indent">If a password manager covers the bubble, move it
+        above or to the right of the field.</p>
       <label class="toggle"><input type="checkbox" id="shortcutEnabled" />
         Keyboard shortcut <kbd id="shortcut">Ctrl+Shift+E</kbd></label>
       <label class="toggle"><input type="checkbox" id="contextMenuEnabled" />
