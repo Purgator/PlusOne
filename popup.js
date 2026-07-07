@@ -21,9 +21,12 @@
   const separatorSelect = document.getElementById("separator");
   const bubblePositionSelect = document.getElementById("bubblePosition");
   const styleRadios = Array.from(document.querySelectorAll('input[name="tagStyle"]'));
-  const toggles = ["bubbleEnabled", "shortcutEnabled", "contextMenuEnabled"].map(
-    (id) => document.getElementById(id)
-  );
+  const toggles = [
+    "bubbleEnabled",
+    "shortcutEnabled",
+    "contextMenuEnabled",
+    "copyOnFill"
+  ].map((id) => document.getElementById(id));
 
   let settings = { ...DEFAULTS };
   let currentTab = null;
