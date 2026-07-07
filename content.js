@@ -3,24 +3,28 @@
 (function () {
   "use strict";
 
-  const { buildAlias } = globalThis.PlusAlias;
+  const { buildAlias, DEFAULTS } = globalThis.PlusAlias;
 
-  let userEmail = "";
+  let settings = { ...DEFAULTS };
   let chip = null;
+  let chipAlias = ""; // exact value the visible chip will fill
   let activeField = null;
 
-  chrome.storage.sync.get({ email: "" }, (data) => {
-    userEmail = data.email || "";
+  chrome.storage.sync.get(DEFAULTS, (data) => {
+    settings = data;
   });
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === "sync" && changes.email) {
-      userEmail = changes.email.newValue || "";
-      hideChip();
+    if (area !== "sync") return;
+    for (const [key, change] of Object.entries(changes)) {
+      settings[key] = change.newValue;
     }
+    hideChip();
   });
 
   function aliasForThisSite() {
-    return userEmail ? buildAlias(userEmail, location.hostname) : "";
+    return settings.email
+      ? buildAlias(settings.email, location.hostname, settings)
+      : "";
   }
 
   // --- Email field detection -------------------------------------------
@@ -69,7 +73,7 @@
     setTimeout(() => field.classList.remove("gpa-flash"), 700);
   }
 
-  // Called by the popup button and the keyboard shortcut.
+  // Called by the popup button, the keyboard shortcut and the context menu.
   function fillBestField() {
     const alias = aliasForThisSite();
     if (!alias) return { ok: false, reason: "no-email" };
@@ -96,8 +100,8 @@
     // mousedown fires before the field loses focus
     chip.addEventListener("mousedown", (e) => {
       e.preventDefault();
-      if (activeField) {
-        fillField(activeField, aliasForThisSite());
+      if (activeField && chipAlias) {
+        fillField(activeField, chipAlias);
       }
       hideChip();
     });
@@ -106,9 +110,11 @@
   }
 
   function showChip(field) {
+    if (!settings.bubbleEnabled) return;
     const alias = aliasForThisSite();
     if (!alias || field.value === alias) return;
     activeField = field;
+    chipAlias = alias;
     const el = ensureChip();
     el.innerHTML = "";
     const icon = document.createElement("span");
@@ -130,6 +136,7 @@
 
   function hideChip() {
     activeField = null;
+    chipAlias = "";
     if (chip) chip.classList.remove("gpa-visible");
   }
 
