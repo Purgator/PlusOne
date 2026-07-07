@@ -11,6 +11,7 @@
     bubblePosition: "below", // below | above | right
     shortcutEnabled: true,
     contextMenuEnabled: true,
+    copyOnFill: true,
     // Alias format
     tagStyle: "name", // name | domain | host | custom
     customPattern: "{name}",
