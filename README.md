@@ -20,14 +20,35 @@ Gmail (and Google Workspace, including custom domains) ignores everything after 
 - Works with React/Vue/Angular forms (events are dispatched so the framework registers the value).
 - Your email is stored in Chrome sync storage only. No network requests, no tracking.
 
-## Install (unpacked)
+## How to install (5 minutes, no technical skills needed)
 
-1. Open `chrome://extensions`.
-2. Enable **Developer mode** (top right).
-3. Click **Load unpacked** and select this folder.
-4. The settings page opens automatically — enter your email and click **Save**.
+PlusOne is not on the Chrome Web Store, so you install it manually. It's easier than it sounds:
 
-That's it. Visit any sign-up page and click into the email field.
+**Step 1 — Download the extension**
+
+- On this page, click the green **<> Code** button (top right of the file list), then **Download ZIP**.
+- The file `RegisterAsPowerGmailExtension-master.zip` lands in your Downloads folder.
+
+**Step 2 — Unzip it somewhere permanent**
+
+- Right-click the ZIP → **Extract All…** (Windows) or double-click it (Mac).
+- Move the extracted folder somewhere it can stay forever, like your Documents folder.
+  ⚠️ Chrome will load the extension **from this folder** — if you delete or move it later, the extension stops working.
+
+**Step 3 — Load it in Chrome**
+
+1. Open Chrome and type `chrome://extensions` in the address bar, press Enter.
+2. Turn on the **Developer mode** switch (top-right corner of the page).
+3. Click the **Load unpacked** button (top-left) and select the folder you extracted (the one that contains `manifest.json`).
+
+**Step 4 — Set it up**
+
+- The PlusOne settings page opens by itself. Type your email address, click **Save**. Done!
+- Optional: click the puzzle-piece icon 🧩 next to Chrome's address bar and pin **PlusOne** so it's always visible.
+
+**Try it:** go to any website's sign-up page and click the email box — a little bubble appears with your ready-made alias. Click it, and you're done.
+
+> **Updating later:** download the new ZIP, replace the folder's contents, then click the ↻ refresh icon on the PlusOne card in `chrome://extensions`.
 
 ## Options
 
