@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gmail Plus Alias Autofill</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <span class="logo">+</span>
+    <h1>Gmail Plus Alias Autofill</h1>
+  </header>
+
+  <main>
+    <!-- Setup / settings -->
+    <section id="setup">
+      <label for="email">Your email address</label>
+      <input id="email" type="email" placeholder="jane.doe@gmail.com" autocomplete="off" spellcheck="false" />
+      <p class="hint">
+        Works with Gmail and Google Workspace addresses — including custom
+        domains, as long as they are handled by Gmail (the
+        <code>+something</code> trick is a Gmail feature).
+      </p>
+      <button id="save" class="primary">Save</button>
+      <p id="save-status" class="status" role="status"></p>
+    </section>
+
+    <!-- Current site preview + fill action -->
+    <section id="site" hidden>
+      <p class="preview-label">On this site your alias is</p>
+      <p id="alias" class="alias"></p>
+      <button id="fill" class="primary">Fill email field on this page</button>
+      <p id="fill-status" class="status" role="status"></p>
+    </section>
+
+    <section class="tips">
+      <p><strong>Tip:</strong> when you click into an email field, a suggestion
+        bubble appears — one click fills it.</p>
+      <p><strong>Shortcut:</strong> press <kbd id="shortcut">Ctrl+Shift+E</kbd>
+        on any page to fill the email field.
+        <a href="#" id="shortcuts-link">Change shortcut</a></p>
+    </section>
+  </main>
+
+  <script src="alias.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
