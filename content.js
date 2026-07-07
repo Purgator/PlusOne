@@ -9,6 +9,15 @@
   let chip = null;
   let chipAlias = ""; // exact value the visible chip will fill
   let activeField = null;
+  let lastContextTarget = null; // element under the last right-click
+
+  document.addEventListener(
+    "contextmenu",
+    (e) => {
+      lastContextTarget = e.target;
+    },
+    true
+  );
 
   chrome.storage.sync.get(DEFAULTS, (data) => {
     settings = data;
@@ -54,6 +63,18 @@
     );
   }
 
+  // Looser check for explicit right-click fills: the user pointed at the
+  // field, so accept any text-like input even if it doesn't look email-ish.
+  function isFillableInput(el) {
+    if (!el || el.tagName !== "INPUT") return false;
+    const type = (el.getAttribute("type") || "text").toLowerCase();
+    return (
+      ["email", "text", "search", "url", ""].includes(type) &&
+      !el.disabled &&
+      !el.readOnly
+    );
+  }
+
   // --- Fill logic --------------------------------------------------------
 
   function fillField(field, value) {
@@ -87,6 +108,63 @@
     fillField(target, alias);
     hideChip();
     return { ok: true, alias };
+  }
+
+  // Called by the context menu: fill the exact field that was right-clicked.
+  function fillContextTarget() {
+    const alias = aliasForThisSite();
+    if (!alias) return { ok: false, reason: "no-email" };
+    let target = isFillableInput(lastContextTarget) ? lastContextTarget : null;
+    if (!target && isEmailField(document.activeElement)) {
+      target = document.activeElement;
+    }
+    if (!target) target = findEmailFields(document)[0] || null;
+    if (!target) return { ok: false, reason: "no-field" };
+    fillField(target, alias);
+    hideChip();
+    return { ok: true, alias };
+  }
+
+  // --- Failure toast -------------------------------------------------------
+
+  let toastEl = null;
+  let toastTimer = 0;
+
+  function toast(text) {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.className = "gpa-toast";
+      toastEl.setAttribute("popover", "manual");
+      document.documentElement.appendChild(toastEl);
+    }
+    toastEl.textContent = text;
+    toastEl.classList.add("gpa-visible");
+    try {
+      if (toastEl.showPopover && !toastEl.matches(":popover-open")) {
+        toastEl.showPopover();
+      }
+    } catch {
+      /* popover unsupported: z-index fallback */
+    }
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove("gpa-visible");
+      try {
+        if (toastEl.hidePopover && toastEl.matches(":popover-open")) {
+          toastEl.hidePopover();
+        }
+      } catch {
+        /* already closed */
+      }
+    }, 2600);
+  }
+
+  function toastForFailure(reason) {
+    toast(
+      reason === "no-email"
+        ? "PlusOne: save your email address in the extension popup first."
+        : "PlusOne: no email field found here."
+    );
   }
 
   // --- Suggestion chip ---------------------------------------------------
@@ -221,7 +299,19 @@
 
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg && msg.type === "gpa-fill") {
-      sendResponse(fillBestField());
+      // This message is broadcast to every frame: only the frame that owns
+      // the focus should act, otherwise several frames would fill at once.
+      const ae = document.activeElement;
+      if (ae && ae.tagName === "IFRAME") return false; // inner frame handles it
+      if (window !== window.top && !document.hasFocus()) return false;
+      const result = fillBestField();
+      if (msg.feedback && !result.ok) toastForFailure(result.reason);
+      sendResponse(result);
+    } else if (msg && msg.type === "gpa-fill-context") {
+      // Frame-targeted (background passes the clicked frameId), no guards.
+      const result = fillContextTarget();
+      if (!result.ok) toastForFailure(result.reason);
+      sendResponse(result);
     } else if (msg && msg.type === "gpa-status") {
       sendResponse({
         ok: true,

@@ -53,19 +53,26 @@ function syncContextMenu() {
   });
 }
 
-// Send the fill message, injecting the content script first if the tab
-// predates the extension install.
-async function fillTab(tabId) {
+// Send a fill message, injecting the content script first if the tab
+// predates the extension install. When frameId is given (context menu),
+// only that frame is targeted; otherwise the message reaches all frames
+// and the focused one acts.
+async function fillTab(tabId, message, frameId) {
+  const options = typeof frameId === "number" ? { frameId } : undefined;
   try {
-    await chrome.tabs.sendMessage(tabId, { type: "gpa-fill" });
+    await chrome.tabs.sendMessage(tabId, message, options);
   } catch {
+    const target =
+      typeof frameId === "number"
+        ? { tabId, frameIds: [frameId] }
+        : { tabId, allFrames: true };
     try {
-      await chrome.scripting.insertCSS({ target: { tabId }, files: ["content.css"] });
+      await chrome.scripting.insertCSS({ target, files: ["content.css"] });
       await chrome.scripting.executeScript({
-        target: { tabId },
+        target,
         files: ["alias.js", "content.js"]
       });
-      await chrome.tabs.sendMessage(tabId, { type: "gpa-fill" });
+      await chrome.tabs.sendMessage(tabId, message, options);
     } catch {
       // Restricted page (chrome://, web store...): nothing we can do.
     }
@@ -77,9 +84,10 @@ chrome.commands.onCommand.addListener(async (command) => {
   const { shortcutEnabled } = await chrome.storage.sync.get(FLAGS);
   if (!shortcutEnabled) return;
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tab && tab.id) fillTab(tab.id);
+  if (tab && tab.id) fillTab(tab.id, { type: "gpa-fill", feedback: true });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === MENU_ID && tab && tab.id) fillTab(tab.id);
+  if (info.menuItemId !== MENU_ID || !tab || !tab.id) return;
+  fillTab(tab.id, { type: "gpa-fill-context" }, info.frameId || 0);
 });
