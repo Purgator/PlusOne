@@ -33,12 +33,58 @@
       <p id="fill-status" class="status" role="status"></p>
     </section>
 
-    <section class="tips">
-      <p><strong>Tip:</strong> when you click into an email field, a suggestion
-        bubble appears — one click fills it.</p>
-      <p><strong>Shortcut:</strong> press <kbd id="shortcut">Ctrl+Shift+E</kbd>
-        on any page to fill the email field.
-        <a href="#" id="shortcuts-link">Change shortcut</a></p>
+    <!-- Alias format options -->
+    <section id="format">
+      <h2>Alias format</h2>
+      <div class="radio-group">
+        <label><input type="radio" name="tagStyle" value="name" />
+          Site name <span class="ex">+amazon</span></label>
+        <label><input type="radio" name="tagStyle" value="domain" />
+          Domain with extension <span class="ex">+amazon.com</span></label>
+        <label><input type="radio" name="tagStyle" value="host" />
+          Full hostname <span class="ex">+music.amazon.com</span></label>
+        <label><input type="radio" name="tagStyle" value="custom" />
+          Custom pattern</label>
+      </div>
+      <div id="pattern-box" hidden>
+        <input id="customPattern" type="text" placeholder="{name}-{year}" spellcheck="false" />
+        <p class="hint">Tokens: <code>{name}</code> <code>{domain}</code>
+          <code>{host}</code> <code>{year}</code> <code>{month}</code>
+          <code>{day}</code> <code>{random}</code></p>
+      </div>
+      <div class="row">
+        <label for="tagExtra">Also append</label>
+        <select id="tagExtra">
+          <option value="none">Nothing</option>
+          <option value="year">The year</option>
+          <option value="yearmonth">Year + month</option>
+          <option value="random">4 random digits</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="separator">Separator</label>
+        <select id="separator">
+          <option value="-">- dash</option>
+          <option value="_">_ underscore</option>
+          <option value=".">. dot</option>
+        </select>
+      </div>
+      <p class="preview-label">Example</p>
+      <p id="format-preview" class="alias"></p>
+      <p class="hint" id="random-note" hidden>A new random number is generated
+        each time a field is filled.</p>
+    </section>
+
+    <!-- Fill trigger toggles -->
+    <section id="triggers">
+      <h2>Fill triggers</h2>
+      <label class="toggle"><input type="checkbox" id="bubbleEnabled" />
+        Suggestion bubble when you click an email field</label>
+      <label class="toggle"><input type="checkbox" id="shortcutEnabled" />
+        Keyboard shortcut <kbd id="shortcut">Ctrl+Shift+E</kbd></label>
+      <label class="toggle"><input type="checkbox" id="contextMenuEnabled" />
+        Right-click menu on input fields</label>
+      <p class="hint"><a href="#" id="shortcuts-link">Change the keyboard shortcut</a></p>
     </section>
   </main>
 
