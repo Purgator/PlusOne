@@ -19,6 +19,7 @@
   const randomNote = document.getElementById("random-note");
   const tagExtraSelect = document.getElementById("tagExtra");
   const separatorSelect = document.getElementById("separator");
+  const bubblePositionSelect = document.getElementById("bubblePosition");
   const styleRadios = Array.from(document.querySelectorAll('input[name="tagStyle"]'));
   const toggles = ["bubbleEnabled", "shortcutEnabled", "contextMenuEnabled"].map(
     (id) => document.getElementById(id)
@@ -38,6 +39,7 @@
     patternInput.value = settings.customPattern;
     tagExtraSelect.value = settings.tagExtra;
     separatorSelect.value = settings.separator;
+    bubblePositionSelect.value = settings.bubblePosition;
     for (const radio of styleRadios) {
       radio.checked = radio.value === settings.tagStyle;
     }
@@ -82,6 +84,7 @@
     formatPreview.textContent = buildAlias(exampleEmail, exampleHost, settings);
 
     patternBox.hidden = settings.tagStyle !== "custom";
+    bubblePositionSelect.disabled = !settings.bubbleEnabled;
     randomNote.hidden = !(
       settings.tagExtra === "random" ||
       (settings.tagStyle === "custom" && settings.customPattern.includes("{random}"))
@@ -109,6 +112,9 @@
   });
   separatorSelect.addEventListener("change", () => {
     saveSetting({ separator: separatorSelect.value });
+  });
+  bubblePositionSelect.addEventListener("change", () => {
+    saveSetting({ bubblePosition: bubblePositionSelect.value });
   });
   for (const box of toggles) {
     box.addEventListener("change", () => {

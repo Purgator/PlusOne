@@ -11,7 +11,7 @@ Gmail (and Google Workspace, including custom domains) ignores everything after 
 ## Features
 
 - **One-time setup** — enter your email once in the popup. Works with `@gmail.com` or any custom domain handled by Gmail.
-- **Suggestion bubble** — click into an email field on any registration form and a small bubble appears with the ready-made alias. One click fills it.
+- **Suggestion bubble** — click into an email field on any registration form and a small bubble appears with the ready-made alias. One click fills it. It renders in the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer) (Popover API), so password-manager overlays can't cover it — and its position (below, above, or right of the field) is configurable in case the browser's own autofill dropdown gets in the way.
 - **Keyboard shortcut** — press `Ctrl+Shift+E` (`Cmd+Shift+E` on Mac) on any page to fill the email field. Rebindable at `chrome://extensions/shortcuts`.
 - **Right-click menu** — "Fill with Gmail plus alias" on any input field.
 - **Popup fill button** — the toolbar popup shows a live preview of the alias for the current site and a "Fill" button.
@@ -48,7 +48,7 @@ You can additionally append the year, year+month, or 4 random digits to any styl
 
 **Fill triggers** — enable or disable each one independently:
 
-- Suggestion bubble on email-field focus
+- Suggestion bubble on email-field focus, with a position choice (below, above, or right of the field)
 - Keyboard shortcut
 - Right-click context menu on input fields
 

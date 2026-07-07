@@ -97,6 +97,9 @@
     chip.type = "button";
     chip.className = "gpa-chip";
     chip.setAttribute("aria-label", "Fill with Gmail plus alias");
+    // Render in the browser's top layer so password-manager overlays
+    // (which max out z-index) can't cover the chip.
+    chip.setAttribute("popover", "manual");
     // mousedown fires before the field loses focus
     chip.addEventListener("mousedown", (e) => {
       e.preventDefault();
@@ -123,21 +126,56 @@
     const text = document.createElement("span");
     text.textContent = alias;
     el.append(icon, text);
-    positionChip(field, el);
+    // Show first (top layer + display), then position: the chip must be
+    // rendered to be measurable for above/right placement.
     el.classList.add("gpa-visible");
+    try {
+      if (el.showPopover && !el.matches(":popover-open")) el.showPopover();
+    } catch {
+      /* popover unsupported or blocked: z-index fallback still applies */
+    }
+    positionChip(field, el);
   }
 
   function positionChip(field, el) {
     const rect = field.getBoundingClientRect();
-    el.style.top = `${Math.round(rect.bottom + 6)}px`;
-    el.style.left = `${Math.round(rect.left)}px`;
     el.style.maxWidth = `${Math.max(Math.round(rect.width), 260)}px`;
+    const gap = 6;
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    let top;
+    let left;
+    switch (settings.bubblePosition) {
+      case "above":
+        top = rect.top - h - gap;
+        left = rect.left;
+        break;
+      case "right":
+        top = rect.top + (rect.height - h) / 2;
+        left = rect.right + gap + 2;
+        break;
+      default: // below
+        top = rect.bottom + gap;
+        left = rect.left;
+    }
+    // Keep the chip inside the viewport.
+    left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
+    top = Math.max(8, Math.min(top, window.innerHeight - h - 8));
+    el.style.top = `${Math.round(top)}px`;
+    el.style.left = `${Math.round(left)}px`;
   }
 
   function hideChip() {
     activeField = null;
     chipAlias = "";
-    if (chip) chip.classList.remove("gpa-visible");
+    if (chip) {
+      chip.classList.remove("gpa-visible");
+      try {
+        if (chip.hidePopover && chip.matches(":popover-open")) chip.hidePopover();
+      } catch {
+        /* already closed */
+      }
+    }
   }
 
   document.addEventListener("focusin", (e) => {
