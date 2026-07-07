@@ -1,4 +1,6 @@
-# Gmail Plus Alias Autofill
+# PlusOne
+
+*Never sign up alone.*
 
 A Chrome extension that fills sign-up email fields with a **Gmail plus alias** built from the website's name:
 
