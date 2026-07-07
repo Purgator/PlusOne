@@ -130,6 +130,10 @@ label.toggle input {
   margin-bottom: 0;
 }
 
+.indent {
+  margin-left: 23px;
+}
+
 .row {
   display: flex;
   align-items: center;
@@ -157,6 +161,11 @@ label.toggle input {
 .row select:focus {
   outline: 2px solid var(--blue);
   outline-offset: -1px;
+}
+
+.row select:disabled {
+  color: var(--muted);
+  background: var(--bg-soft);
 }
 
 #format .preview-label {

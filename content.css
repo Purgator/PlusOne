@@ -1,5 +1,9 @@
 .gpa-chip {
   position: fixed;
+  /* Neutralize the UA popover styles (inset: 0; margin: auto) so the
+     inline top/left placement applies. */
+  inset: auto;
+  margin: 0;
   z-index: 2147483647;
   display: none;
   align-items: center;

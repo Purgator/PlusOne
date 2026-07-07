@@ -8,6 +8,7 @@
     email: "",
     // Fill triggers
     bubbleEnabled: true,
+    bubblePosition: "below", // below | above | right
     shortcutEnabled: true,
     contextMenuEnabled: true,
     // Alias format
