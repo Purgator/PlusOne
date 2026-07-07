@@ -213,11 +213,32 @@
       /* popover unsupported or blocked: z-index fallback still applies */
     }
     positionChip(field, el);
+    startTracking();
+  }
+
+  // While the chip is visible, follow the field every frame: pages keep
+  // reflowing after load (fonts, images, banners), which would otherwise
+  // leave the chip at stale coordinates. Also covers scrolling inside
+  // nested containers and animated layouts.
+  let rafId = 0;
+
+  function startTracking() {
+    cancelAnimationFrame(rafId);
+    const loop = () => {
+      if (!chip || !chip.classList.contains("gpa-visible")) return;
+      if (!activeField || !activeField.isConnected) {
+        hideChip();
+        return;
+      }
+      positionChip(activeField, chip);
+      rafId = requestAnimationFrame(loop);
+    };
+    rafId = requestAnimationFrame(loop);
   }
 
   function positionChip(field, el) {
     const rect = field.getBoundingClientRect();
-    el.style.maxWidth = `${Math.max(Math.round(rect.width), 260)}px`;
+    setStyle(el, "maxWidth", `${Math.max(Math.round(rect.width), 260)}px`);
     const gap = 6;
     const w = el.offsetWidth;
     const h = el.offsetHeight;
@@ -239,13 +260,19 @@
     // Keep the chip inside the viewport.
     left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
     top = Math.max(8, Math.min(top, window.innerHeight - h - 8));
-    el.style.top = `${Math.round(top)}px`;
-    el.style.left = `${Math.round(left)}px`;
+    setStyle(el, "top", `${Math.round(top)}px`);
+    setStyle(el, "left", `${Math.round(left)}px`);
+  }
+
+  // Skip identical writes so the per-frame loop doesn't dirty style state.
+  function setStyle(el, prop, value) {
+    if (el.style[prop] !== value) el.style[prop] = value;
   }
 
   function hideChip() {
     activeField = null;
     chipAlias = "";
+    cancelAnimationFrame(rafId);
     if (chip) {
       chip.classList.remove("gpa-visible");
       try {
@@ -275,19 +302,6 @@
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") hideChip();
-  });
-
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (activeField && chip && chip.classList.contains("gpa-visible")) {
-        positionChip(activeField, chip);
-      }
-    },
-    { passive: true, capture: true }
-  );
-  window.addEventListener("resize", () => {
-    if (activeField && chip) positionChip(activeField, chip);
   });
 
   // Hide the suggestion once the user starts typing something else.
