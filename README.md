@@ -13,7 +13,7 @@ Gmail (and Google Workspace, including custom domains) ignores everything after 
 - **One-time setup** — enter your email once in the popup. Works with `@gmail.com` or any custom domain handled by Gmail.
 - **Suggestion bubble** — click into an email field on any registration form and a small bubble appears with the ready-made alias. One click fills it. It renders in the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer) (Popover API), so password-manager overlays can't cover it — and its position (below, above, or right of the field) is configurable in case the browser's own autofill dropdown gets in the way.
 - **Keyboard shortcut** — press `Ctrl+Shift+E` (`Cmd+Shift+E` on Mac) on any page to fill the email field. Rebindable at `chrome://extensions/shortcuts`.
-- **Right-click menu** — "Fill with Gmail plus alias" on any input field.
+- **Right-click menu** — "Fill with Gmail plus alias" on any input field. Fills exactly the field you right-clicked, even if it doesn't look like an email field, and works inside iframes.
 - **Popup fill button** — the toolbar popup shows a live preview of the alias for the current site and a "Fill" button.
 - **Smart site names** — `www.` and TLDs are stripped, and common suffixes like `.co.uk` are handled: `signup.example.co.uk` → `you+example@...`.
 - **Configurable** — every trigger can be toggled, and the alias format is fully customizable (see below).
