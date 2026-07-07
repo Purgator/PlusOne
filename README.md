@@ -27,7 +27,7 @@ PlusOne is not on the Chrome Web Store, so you install it manually. It's easier 
 **Step 1 — Download the extension**
 
 - On this page, click the green **<> Code** button (top right of the file list), then **Download ZIP**.
-- The file `RegisterAsPowerGmailExtension-master.zip` lands in your Downloads folder.
+- The file `PlusOne-master.zip` lands in your Downloads folder.
 
 **Step 2 — Unzip it somewhere permanent**
 
