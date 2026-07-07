@@ -87,6 +87,35 @@
     field.dispatchEvent(new Event("input", { bubbles: true }));
     field.dispatchEvent(new Event("change", { bubbles: true }));
     flash(field);
+    if (settings.copyOnFill) copyToClipboard(value);
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard?.writeText) {
+      // Rejects when the document isn't focused (e.g. fill from the popup):
+      // fall back to the execCommand path, which the clipboardWrite
+      // permission allows without a fresh user gesture.
+      navigator.clipboard.writeText(text).catch(() => execCopy(text));
+    } else {
+      execCopy(text);
+    }
+  }
+
+  function execCopy(text) {
+    try {
+      const prevFocus = document.activeElement;
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      if (prevFocus && prevFocus.focus) prevFocus.focus();
+    } catch {
+      /* clipboard unavailable: filling still worked */
+    }
   }
 
   function flash(field) {

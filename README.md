@@ -16,6 +16,7 @@ Gmail (and Google Workspace, including custom domains) ignores everything after 
 - **Right-click menu** — "Fill with Gmail plus alias" on any input field. Fills exactly the field you right-clicked, even if it doesn't look like an email field, and works inside iframes.
 - **Popup fill button** — the toolbar popup shows a live preview of the alias for the current site and a "Fill" button.
 - **Smart site names** — `www.` and TLDs are stripped, and common suffixes like `.co.uk` are handled: `signup.example.co.uk` → `you+example@...`.
+- **Clipboard copy** — after every fill the alias is also copied to the clipboard (toggleable), handy for confirmation fields or keeping track of which alias a site got.
 - **Configurable** — every trigger can be toggled, and the alias format is fully customizable (see below).
 - Works with React/Vue/Angular forms (events are dispatched so the framework registers the value).
 - Your email is stored in Chrome sync storage only. No network requests, no tracking.
@@ -72,6 +73,8 @@ You can additionally append the year, year+month, or 4 random digits to any styl
 - Suggestion bubble on email-field focus, with a position choice (below, above, or right of the field)
 - Keyboard shortcut
 - Right-click context menu on input fields
+
+**After filling** — copy the alias to the clipboard (on by default).
 
 ## Files
 
