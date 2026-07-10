@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PlusOne — Gmail plus alias autofill",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Fill sign-up email fields with a Gmail plus alias (you+sitename@yourdomain) in one click or with a keyboard shortcut.",
   "permissions": ["storage", "activeTab", "scripting", "contextMenus", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],
@@ -37,14 +37,5 @@
     "32": "icons/icon32.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  },
-  "commands": {
-    "fill-email": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+E",
-        "mac": "Command+Shift+E"
-      },
-      "description": "Fill the email field on this page with your plus alias"
-    }
   }
 }

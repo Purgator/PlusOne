@@ -1,8 +1,8 @@
-// Service worker: keyboard shortcut, context menu and first-run setup.
+// Service worker: context menu and first-run setup. (The keyboard shortcut
+// lives in the content script, where any combination can be matched.)
 
 const FLAGS = {
   email: "",
-  shortcutEnabled: true,
   contextMenuEnabled: true
 };
 
@@ -78,14 +78,6 @@ async function fillTab(tabId, message, frameId) {
     }
   }
 }
-
-chrome.commands.onCommand.addListener(async (command) => {
-  if (command !== "fill-email") return;
-  const { shortcutEnabled } = await chrome.storage.sync.get(FLAGS);
-  if (!shortcutEnabled) return;
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tab && tab.id) fillTab(tab.id, { type: "gpa-fill", feedback: true });
-});
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId !== MENU_ID || !tab || !tab.id) return;
