@@ -3,6 +3,7 @@
 
 const FLAGS = {
   email: "",
+  emails: [],
   contextMenuEnabled: true
 };
 
@@ -25,7 +26,9 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== "sync") return;
   if (changes.email) updateBadge();
-  if (changes.contextMenuEnabled) syncContextMenu();
+  if (changes.contextMenuEnabled || changes.emails || changes.email) {
+    syncContextMenu();
+  }
 });
 
 function updateBadge() {
@@ -40,13 +43,25 @@ function updateBadge() {
 }
 
 function syncContextMenu() {
-  chrome.storage.sync.get(FLAGS, ({ contextMenuEnabled }) => {
+  chrome.storage.sync.get(FLAGS, ({ contextMenuEnabled, emails, email }) => {
     chrome.contextMenus.removeAll(() => {
-      if (contextMenuEnabled) {
-        chrome.contextMenus.create({
-          id: MENU_ID,
-          title: "Fill with Gmail plus alias",
-          contexts: ["editable"]
+      if (!contextMenuEnabled) return;
+      chrome.contextMenus.create({
+        id: MENU_ID,
+        title: "Fill with Gmail plus alias",
+        contexts: ["editable"]
+      });
+      // With several saved addresses, a submenu lets the user pick which
+      // one to build the alias from (main address marked).
+      const list = Array.isArray(emails) && emails.length ? emails : [];
+      if (list.length > 1) {
+        list.forEach((addr, i) => {
+          chrome.contextMenus.create({
+            id: `${MENU_ID}:${i}`,
+            parentId: MENU_ID,
+            title: addr === email ? `${addr} — main` : addr,
+            contexts: ["editable"]
+          });
         });
       }
     });
@@ -80,6 +95,16 @@ async function fillTab(tabId, message, frameId) {
 }
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId !== MENU_ID || !tab || !tab.id) return;
-  fillTab(tab.id, { type: "gpa-fill-context" }, info.frameId || 0);
+  if (!tab || !tab.id) return;
+  const id = String(info.menuItemId);
+  if (id === MENU_ID) {
+    // Single-address setups: the parent item is directly clickable.
+    fillTab(tab.id, { type: "gpa-fill-context" }, info.frameId || 0);
+  } else if (id.startsWith(`${MENU_ID}:`)) {
+    const index = Number(id.slice(MENU_ID.length + 1));
+    chrome.storage.sync.get(FLAGS, ({ emails }) => {
+      const email = Array.isArray(emails) ? emails[index] : undefined;
+      fillTab(tab.id, { type: "gpa-fill-context", email }, info.frameId || 0);
+    });
+  }
 });
