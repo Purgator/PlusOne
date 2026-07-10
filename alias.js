@@ -5,7 +5,8 @@
 
   // Single source of truth for settings and their defaults.
   const DEFAULTS = {
-    email: "",
+    email: "", // the main address, used for filling
+    emails: [], // all saved addresses
     // Fill triggers
     bubbleEnabled: true,
     bubblePosition: "below", // below | above | right
