@@ -36,6 +36,43 @@
       : "";
   }
 
+  function emailList() {
+    if (Array.isArray(settings.emails) && settings.emails.length) {
+      return settings.emails;
+    }
+    return settings.email ? [settings.email] : [];
+  }
+
+  // Does the field value correspond to this address — either the plain
+  // address or an alias built from it? Matching on "local+" and "@domain"
+  // keeps it independent of the tag content ({random}, year...).
+  function matchesEmail(value, email) {
+    const v = String(value).trim().toLowerCase();
+    const em = String(email).toLowerCase();
+    if (v === em) return true;
+    const at = em.indexOf("@");
+    if (at <= 0) return false;
+    return v.startsWith(em.slice(0, at) + "+") && v.endsWith("@" + em.slice(at + 1));
+  }
+
+  // Address to fill a field with: the main one — or, when the field already
+  // holds one of the saved addresses, the NEXT one in the list, so repeated
+  // fills cycle through all saved addresses.
+  function sourceEmailFor(value) {
+    const list = emailList();
+    if (!list.length) return "";
+    if (value) {
+      const i = list.findIndex((em) => matchesEmail(value, em));
+      if (i !== -1) return list[(i + 1) % list.length];
+    }
+    return settings.email || list[0];
+  }
+
+  function aliasFor(field) {
+    const source = sourceEmailFor(field.value);
+    return source ? buildAlias(source, location.hostname, settings) : "";
+  }
+
   // --- Email field detection -------------------------------------------
 
   function isEmailField(el) {
@@ -123,10 +160,10 @@
     setTimeout(() => field.classList.remove("gpa-flash"), 700);
   }
 
-  // Called by the popup button, the keyboard shortcut and the context menu.
+  // Called by the popup button and the keyboard shortcut. If the field
+  // already holds a saved address, the next one in the list is used.
   function fillBestField() {
-    const alias = aliasForThisSite();
-    if (!alias) return { ok: false, reason: "no-email" };
+    if (!emailList().length) return { ok: false, reason: "no-email" };
     let target = null;
     if (isEmailField(document.activeElement)) {
       target = document.activeElement;
@@ -134,21 +171,28 @@
       target = findEmailFields(document)[0] || null;
     }
     if (!target) return { ok: false, reason: "no-field" };
+    const alias = aliasFor(target);
+    if (!alias) return { ok: false, reason: "no-email" };
     fillField(target, alias);
     hideChip();
     return { ok: true, alias };
   }
 
-  // Called by the context menu: fill the exact field that was right-clicked.
-  function fillContextTarget() {
-    const alias = aliasForThisSite();
-    if (!alias) return { ok: false, reason: "no-email" };
+  // Called by the context menu: fill the exact field that was right-clicked,
+  // with the address picked in the submenu when one was chosen.
+  function fillContextTarget(overrideEmail) {
+    if (!overrideEmail && !emailList().length) {
+      return { ok: false, reason: "no-email" };
+    }
     let target = isFillableInput(lastContextTarget) ? lastContextTarget : null;
     if (!target && isEmailField(document.activeElement)) {
       target = document.activeElement;
     }
     if (!target) target = findEmailFields(document)[0] || null;
     if (!target) return { ok: false, reason: "no-field" };
+    const source = overrideEmail || sourceEmailFor(target.value);
+    const alias = source ? buildAlias(source, location.hostname, settings) : "";
+    if (!alias) return { ok: false, reason: "no-email" };
     fillField(target, alias);
     hideChip();
     return { ok: true, alias };
@@ -221,7 +265,9 @@
 
   function showChip(field) {
     if (!settings.bubbleEnabled) return;
-    const alias = aliasForThisSite();
+    // For a field already holding a saved address, this proposes the next
+    // address in the list (see sourceEmailFor).
+    const alias = aliasFor(field);
     if (!alias || field.value === alias) return;
     activeField = field;
     chipAlias = alias;
@@ -386,7 +432,7 @@
       sendResponse(result);
     } else if (msg && msg.type === "gpa-fill-context") {
       // Frame-targeted (background passes the clicked frameId), no guards.
-      const result = fillContextTarget();
+      const result = fillContextTarget(msg.email);
       if (!result.ok) toastForFailure(result.reason);
       sendResponse(result);
     } else if (msg && msg.type === "gpa-status") {
