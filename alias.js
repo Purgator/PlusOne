@@ -11,6 +11,7 @@
     bubbleEnabled: true,
     bubblePosition: "below", // below | above | right
     shortcutEnabled: true,
+    shortcut: "Ctrl+Shift+E", // "Mods+Key" combo matched by the content script
     contextMenuEnabled: true,
     copyOnFill: true,
     // Alias format

@@ -12,8 +12,7 @@
   const aliasEl = document.getElementById("alias");
   const fillBtn = document.getElementById("fill");
   const fillStatus = document.getElementById("fill-status");
-  const shortcutEl = document.getElementById("shortcut");
-  const shortcutsLink = document.getElementById("shortcuts-link");
+  const shortcutBtn = document.getElementById("shortcut-btn");
   const patternBox = document.getElementById("pattern-box");
   const patternInput = document.getElementById("customPattern");
   const formatPreview = document.getElementById("format-preview");
@@ -62,11 +61,6 @@
       box.checked = Boolean(settings[box.id]);
     }
 
-    // Show the actual shortcut currently bound to the command.
-    const commands = await chrome.commands.getAll();
-    const fill = commands.find((c) => c.name === "fill-email");
-    if (fill && fill.shortcut) shortcutEl.textContent = fill.shortcut;
-
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     currentTab = tab || null;
     try {
@@ -99,6 +93,8 @@
 
     patternBox.hidden = settings.tagStyle !== "custom";
     bubblePositionSelect.disabled = !settings.bubbleEnabled;
+    if (!recording) shortcutBtn.textContent = settings.shortcut;
+    shortcutBtn.disabled = !settings.shortcutEnabled;
     randomNote.hidden = !(
       settings.tagExtra === "random" ||
       (settings.tagStyle === "custom" && settings.customPattern.includes("{random}"))
@@ -247,10 +243,47 @@
     }
   });
 
-  shortcutsLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+  // --- Shortcut recorder -----------------------------------------------------
+
+  let recording = false;
+
+  shortcutBtn.addEventListener("click", () => {
+    recording = true;
+    shortcutBtn.textContent = "Press keys…";
+    shortcutBtn.classList.add("recording");
   });
+
+  shortcutBtn.addEventListener("keydown", (e) => {
+    if (!recording) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.key === "Escape") {
+      stopRecording();
+      return;
+    }
+    // Wait until a non-modifier key completes the combo.
+    if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) return;
+    const mods = [];
+    if (e.ctrlKey) mods.push("Ctrl");
+    if (e.altKey) mods.push("Alt");
+    if (e.shiftKey) mods.push("Shift");
+    if (e.metaKey) mods.push("Cmd");
+    if (!mods.length || (mods.length === 1 && mods[0] === "Shift")) {
+      shortcutBtn.textContent = "Add Ctrl, Alt or Cmd…";
+      return;
+    }
+    const key = e.key.length === 1 ? e.key.toUpperCase() : e.key;
+    saveSetting({ shortcut: [...mods, key].join("+") });
+    stopRecording();
+  });
+
+  shortcutBtn.addEventListener("blur", stopRecording);
+
+  function stopRecording() {
+    recording = false;
+    shortcutBtn.classList.remove("recording");
+    shortcutBtn.textContent = settings.shortcut;
+  }
 
   function setStatus(el, text, kind) {
     el.textContent = text;

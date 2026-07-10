@@ -245,6 +245,37 @@ label.toggle input {
   background: var(--bg-soft);
 }
 
+.shortcut-btn {
+  flex: none;
+  min-width: 150px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 8px;
+  background: var(--bg-soft);
+  font: inherit;
+  font-size: 13px;
+  font-family: ui-monospace, Consolas, monospace;
+  cursor: pointer;
+}
+
+.shortcut-btn:hover {
+  border-color: var(--blue);
+}
+
+.shortcut-btn.recording {
+  border-color: var(--blue);
+  background: #f0f6ff;
+  color: var(--blue);
+  font-style: italic;
+}
+
+.shortcut-btn:disabled {
+  color: var(--muted);
+  cursor: default;
+  border-color: var(--border);
+}
+
 #format .preview-label {
   margin-top: 10px;
 }
