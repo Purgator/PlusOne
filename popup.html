@@ -14,14 +14,18 @@
   <main>
     <!-- Setup / settings -->
     <section id="setup">
-      <label for="email">Your email address</label>
-      <input id="email" type="email" placeholder="jane.doe@gmail.com" autocomplete="off" spellcheck="false" />
+      <label for="email">Your email addresses</label>
+      <div id="email-list" role="radiogroup" aria-label="Saved email addresses"></div>
+      <div class="add-row">
+        <input id="email" type="email" placeholder="jane.doe@gmail.com" autocomplete="off" spellcheck="false" />
+        <button id="save" class="primary">Add</button>
+      </div>
       <p class="hint">
         Works with Gmail and Google Workspace addresses — including custom
         domains, as long as they are handled by Gmail (the
-        <code>+something</code> trick is a Gmail feature).
+        <code>+something</code> trick is a Gmail feature). The selected
+        address is the main one, used for filling.
       </p>
-      <button id="save" class="primary">Save</button>
       <p id="save-status" class="status" role="status"></p>
     </section>
 
