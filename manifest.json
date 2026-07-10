@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PlusOne — Gmail plus alias autofill",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Fill sign-up email fields with a Gmail plus alias (you+sitename@yourdomain) in one click or with a keyboard shortcut.",
   "permissions": ["storage", "activeTab", "scripting", "contextMenus", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],

@@ -13,6 +13,83 @@
   box-sizing: border-box;
 }
 
+/* Saved email addresses */
+#email-list {
+  margin-bottom: 8px;
+}
+
+.email-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.email-item.main {
+  border-color: var(--blue);
+  background: #f0f6ff;
+}
+
+.email-item input[type="radio"] {
+  flex: none;
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+.email-item .addr {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.main-badge {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.email-item .remove {
+  flex: none;
+  border: none;
+  background: none;
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.email-item .remove:hover {
+  color: var(--red);
+}
+
+.add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.add-row input {
+  flex: 1;
+}
+
+.add-row button.primary {
+  width: auto;
+  padding: 10px 18px;
+}
+
 body {
   width: 360px;
   margin: 0;

@@ -11,6 +11,7 @@ Gmail (and Google Workspace, including custom domains) ignores everything after 
 ## Features
 
 - **One-time setup** — enter your email once in the popup. Works with `@gmail.com` or any custom domain handled by Gmail.
+- **Several addresses** — save as many email addresses as you like (personal, work…) and pick the **main** one with a click; that's the address used for filling.
 - **Suggestion bubble** — click into an email field on any registration form and a small bubble appears with the ready-made alias. One click fills it. It renders in the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer) (Popover API), so password-manager overlays can't cover it — and its position (below, above, or right of the field) is configurable in case the browser's own autofill dropdown gets in the way.
 - **Keyboard shortcut** — press `Ctrl+Shift+E` (`Cmd+Shift+E` on Mac) on any page to fill the email field. Rebindable at `chrome://extensions/shortcuts`.
 - **Right-click menu** — "Fill with Gmail plus alias" on any input field. Fills exactly the field you right-clicked, even if it doesn't look like an email field, and works inside iframes.
@@ -27,8 +28,8 @@ PlusOne is not on the Chrome Web Store, so you install it manually. It's easier 
 
 **Step 1 — Download the extension**
 
-- On this page, click the green **<> Code** button (top right of the file list), then **Download ZIP**.
-- The file `PlusOne-master.zip` lands in your Downloads folder.
+- Go to the [**latest release**](https://github.com/Purgator/PlusOne/releases/latest) page.
+- Under **Assets**, click **PlusOne.zip** — it lands in your Downloads folder.
 
 **Step 2 — Unzip it somewhere permanent**
 
@@ -44,16 +45,18 @@ PlusOne is not on the Chrome Web Store, so you install it manually. It's easier 
 
 **Step 4 — Set it up**
 
-- The PlusOne settings page opens by itself. Type your email address, click **Save**. Done!
+- The PlusOne settings page opens by itself. Type your email address, click **Add**. Done!
 - Optional: click the puzzle-piece icon 🧩 next to Chrome's address bar and pin **PlusOne** so it's always visible.
 
 **Try it:** go to any website's sign-up page and click the email box — a little bubble appears with your ready-made alias. Click it, and you're done.
 
-> **Updating later:** download the new ZIP, replace the folder's contents, then click the ↻ refresh icon on the PlusOne card in `chrome://extensions`.
+> **Updating later:** download the new ZIP from the [releases page](https://github.com/Purgator/PlusOne/releases), replace the folder's contents, then click the ↻ refresh icon on the PlusOne card in `chrome://extensions`.
 
 ## Options
 
 All options live in the popup (also available as the extension's options page) and save instantly, with a live example preview.
+
+**Email addresses** — save several addresses; the one marked **main** (radio button) is used everywhere. The first address you add becomes the main one automatically.
 
 **Alias format** — what goes after the `+`:
 
@@ -87,3 +90,7 @@ You can additionally append the year, year+month, or 4 random digits to any styl
 | `popup.html/js/css` | Setup, per-site preview, fill button and all options (also the options page) |
 | `background.js` | Keyboard shortcut, context menu, first-run setup, badge |
 | `icons/` | Generated PNG icons |
+
+## License
+
+PlusOne is free software, released under the [GNU General Public License v3.0](LICENSE): you can use, study, share and improve it, and derivative works must stay under the same license.
