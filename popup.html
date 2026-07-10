@@ -12,6 +12,13 @@
   </header>
 
   <main>
+    <!-- Site access (Firefox grants host permissions on demand, not at install) -->
+    <section id="perm" hidden>
+      <p class="perm-text"><strong>One more step:</strong> allow PlusOne to run
+        on websites so it can spot email fields and fill them.</p>
+      <button id="grant" class="primary">Allow access to websites</button>
+    </section>
+
     <!-- Setup / settings -->
     <section id="setup">
       <label for="email">Your email addresses</label>

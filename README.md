@@ -13,7 +13,8 @@ Gmail (and Google Workspace, including custom domains) ignores everything after 
 - **One-time setup** — enter your email once in the popup. Works with `@gmail.com` or any custom domain handled by Gmail.
 - **Several addresses** — save as many email addresses as you like (personal, work…) and pick the **main** one with a click; that's the address used for filling.
 - **Suggestion bubble** — click into an email field on any registration form and a small bubble appears with the ready-made alias. One click fills it. It renders in the browser's [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer) (Popover API), so password-manager overlays can't cover it — and its position (below, above, or right of the field) is configurable in case the browser's own autofill dropdown gets in the way.
-- **Keyboard shortcut** — press `Ctrl+Shift+E` on any page to fill the email field. Fully configurable from the popup: click the combination and press the keys you want. Works in Chrome, Vivaldi, Edge, Brave… (it's handled in the page, not through Chrome's fragile command bindings).
+- **Keyboard shortcut** — press `Ctrl+Shift+E` on any page to fill the email field. Fully configurable from the popup: click the combination and press the keys you want. Works in Chrome, Vivaldi, Edge, Brave, Firefox… (it's handled in the page, not through Chrome's fragile command bindings).
+- **Cross-browser** — one package for Chrome and any Chromium browser, plus Firefox 121+ (see the Firefox notes below).
 - **Right-click menu** — "Fill with Gmail plus alias" on any input field. Fills exactly the field you right-clicked, even if it doesn't look like an email field, and works inside iframes. With several saved addresses, a submenu lets you pick which one to use.
 - **Address cycling** — when a field already contains one of your saved addresses (plain or aliased), the bubble and the keyboard shortcut propose the *next* address in the list, so you can flip through your addresses right in the field.
 - **Popup fill button** — the toolbar popup shows a live preview of the alias for the current site and a "Fill" button.
@@ -52,6 +53,19 @@ PlusOne is not on the Chrome Web Store, so you install it manually. It's easier 
 **Try it:** go to any website's sign-up page and click the email box — a little bubble appears with your ready-made alias. Click it, and you're done.
 
 > **Updating later:** download the new ZIP from the [releases page](https://github.com/Purgator/PlusOne/releases), replace the folder's contents, then click the ↻ refresh icon on the PlusOne card in `chrome://extensions`.
+
+## Firefox
+
+PlusOne also works on Firefox (121 or newer). Two things are different there:
+
+**Installing.** Regular Firefox only keeps extensions signed by Mozilla, so until a signed `.xpi` is attached to the releases you can load it temporarily:
+
+1. Download **PlusOne.zip** from the [latest release](https://github.com/Purgator/PlusOne/releases/latest) (no need to unzip).
+2. Type `about:debugging#/runtime/this-firefox` in the address bar.
+3. Click **Load Temporary Add-on…** and select the ZIP.
+4. ⚠️ Temporary add-ons are removed when Firefox closes — you'll need to redo this after a restart. A permanently installable signed version requires a (free) submission to addons.mozilla.org.
+
+**Allowing site access.** Unlike Chrome, Firefox doesn't grant website access at install. Open the PlusOne popup (toolbar icon) and click **Allow access to websites** — one click, once. Without it the bubble and shortcut can't work.
 
 ## Options
 
