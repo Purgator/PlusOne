@@ -13,6 +13,20 @@
   box-sizing: border-box;
 }
 
+/* Site-access banner (Firefox) */
+#perm {
+  margin: 0 0 4px;
+  padding: 12px;
+  border: 1px solid #f0c36d;
+  border-radius: 10px;
+  background: #fdf7e7;
+}
+
+#perm .perm-text {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
 /* Saved email addresses */
 #email-list {
   margin-bottom: 8px;

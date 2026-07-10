@@ -4,6 +4,8 @@
 
   const { DEFAULTS, buildAlias, isValidEmail } = globalThis.PlusAlias;
 
+  const permSection = document.getElementById("perm");
+  const grantBtn = document.getElementById("grant");
   const emailInput = document.getElementById("email");
   const emailListEl = document.getElementById("email-list");
   const saveBtn = document.getElementById("save");
@@ -59,6 +61,17 @@
     }
     for (const box of toggles) {
       box.checked = Boolean(settings[box.id]);
+    }
+
+    // Chrome grants host_permissions at install; Firefox treats them as
+    // opt-in, so the extension is inert there until the user allows it.
+    try {
+      const granted = await chrome.permissions.contains({
+        origins: ["<all_urls>"]
+      });
+      permSection.hidden = granted;
+    } catch {
+      permSection.hidden = true;
     }
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -240,6 +253,15 @@
       setStatus(fillStatus, "No email field found on this page.", "error");
     } else {
       setStatus(fillStatus, "Save your email address first.", "error");
+    }
+  });
+
+  grantBtn.addEventListener("click", async () => {
+    try {
+      const ok = await chrome.permissions.request({ origins: ["<all_urls>"] });
+      if (ok) permSection.hidden = true;
+    } catch {
+      /* dialog dismissed */
     }
   });
 
