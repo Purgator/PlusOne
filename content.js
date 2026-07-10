@@ -333,6 +333,40 @@
     if (e.key === "Escape") hideChip();
   });
 
+  // --- Keyboard shortcut ---------------------------------------------------
+  // Handled in the page rather than via chrome.commands: command bindings
+  // are only granted at install time and silently stay unbound when another
+  // extension or the browser (e.g. Vivaldi) already uses the combo. A page
+  // listener always works and lets the user pick any combination. Each frame
+  // has this listener but keydown only fires in the focused frame.
+
+  function matchesShortcut(e, combo) {
+    const parts = String(combo).split("+");
+    if (parts.length < 2) return false;
+    const key = parts[parts.length - 1].toLowerCase();
+    const mods = new Set(parts.slice(0, -1));
+    return (
+      e.ctrlKey === mods.has("Ctrl") &&
+      e.altKey === mods.has("Alt") &&
+      e.shiftKey === mods.has("Shift") &&
+      e.metaKey === (mods.has("Cmd") || mods.has("Meta")) &&
+      e.key.toLowerCase() === key
+    );
+  }
+
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (!settings.shortcutEnabled || !settings.shortcut) return;
+      if (!matchesShortcut(e, settings.shortcut)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const result = fillBestField();
+      if (!result.ok) toastForFailure(result.reason);
+    },
+    true
+  );
+
   // Hide the suggestion once the user starts typing something else.
   document.addEventListener("input", (e) => {
     if (e.target === activeField && e.isTrusted) hideChip();

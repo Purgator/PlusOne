@@ -95,10 +95,17 @@
       <p class="hint indent">If a password manager covers the bubble, move it
         above or to the right of the field.</p>
       <label class="toggle"><input type="checkbox" id="shortcutEnabled" />
-        Keyboard shortcut <kbd id="shortcut">Ctrl+Shift+E</kbd></label>
+        Keyboard shortcut</label>
+      <div class="row indent">
+        <label for="shortcut-btn">Combination</label>
+        <button id="shortcut-btn" type="button" class="shortcut-btn"
+          title="Click, then press the keys you want">Ctrl+Shift+E</button>
+      </div>
+      <p class="hint indent">Click the combination, then press the keys you
+        want (must include Ctrl, Alt or Cmd). Pick another combo if your
+        browser already uses this one.</p>
       <label class="toggle"><input type="checkbox" id="contextMenuEnabled" />
         Right-click menu on input fields</label>
-      <p class="hint"><a href="#" id="shortcuts-link">Change the keyboard shortcut</a></p>
     </section>
 
     <!-- Post-fill behavior -->
