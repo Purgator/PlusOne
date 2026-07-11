@@ -25,10 +25,12 @@
   const styleRadios = Array.from(document.querySelectorAll('input[name="tagStyle"]'));
   const toggles = [
     "bubbleEnabled",
+    "registerOnly",
     "shortcutEnabled",
     "contextMenuEnabled",
     "copyOnFill"
   ].map((id) => document.getElementById(id));
+  const registerOnlyBox = document.getElementById("registerOnly");
 
   let settings = { ...DEFAULTS };
   let currentTab = null;
@@ -106,6 +108,7 @@
 
     patternBox.hidden = settings.tagStyle !== "custom";
     bubblePositionSelect.disabled = !settings.bubbleEnabled;
+    registerOnlyBox.disabled = !settings.bubbleEnabled;
     if (!recording) shortcutBtn.textContent = settings.shortcut;
     shortcutBtn.disabled = !settings.shortcutEnabled;
     randomNote.hidden = !(
