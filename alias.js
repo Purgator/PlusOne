@@ -10,6 +10,7 @@
     // Fill triggers
     bubbleEnabled: true,
     bubblePosition: "below", // below | above | right
+    registerOnly: true, // bubble only on pages that look like sign-up forms
     shortcutEnabled: true,
     shortcut: "Ctrl+Shift+E", // "Mods+Key" combo matched by the content script
     contextMenuEnabled: true,
