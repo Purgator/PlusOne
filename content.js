@@ -112,6 +112,62 @@
     );
   }
 
+  // --- Registration page detection ----------------------------------------
+  // Scored heuristics deciding whether the focused field belongs to a
+  // sign-up form (as opposed to a login form or anything else). Only gates
+  // the suggestion bubble; explicit fills (shortcut, right-click, popup)
+  // work everywhere.
+
+  const REGISTER_TEXT_RE =
+    /sign\s*up|register|create\s+(?:your\s+|an?\s+|new\s+)?account|new\s+account|join\s|get\s+started|already\s+have\s+an\s+account|s'?inscrire|inscription|inscrivez|cr[ée]er\s+(?:un\s+|votre\s+)?compte|d[ée]j[àa]\s+un\s+compte|registr(?:ieren|arse|o)|konto\s+erstellen|crear\s+(?:una\s+)?cuenta|criar\s+conta/i;
+  const LOGIN_TEXT_RE =
+    /sign\s*in|log\s*in|welcome\s+back|forgot(?:ten)?\s+(?:your\s+)?password|se\s+connecter|connexion|mot\s+de\s+passe\s+oubli|anmelden|iniciar\s+sesi[oó]n/i;
+  const REGISTER_URL_RE =
+    /regist|sign[-_]?up|signup|join|create[-_]?account|new[-_]?account|inscription|inscri|cadastr|aanmeld/i;
+  const LOGIN_URL_RE = /sign[-_]?in|signin|log[-_]?in|login|connexion|auth/i;
+
+  function looksLikeRegisterContext(field) {
+    const form = field ? field.form || field.closest("form") : null;
+    const root = form || document.body || document.documentElement;
+    let score = 0;
+
+    // Strongest signal: browsers mark sign-up password fields this way,
+    // login forms use current-password.
+    if (root.querySelector('input[autocomplete="new-password" i]')) score += 3;
+    if (root.querySelectorAll('input[type="password"]').length >= 2) score += 2;
+    if (form && form.querySelector('input[autocomplete="current-password" i]')) {
+      score -= 2;
+    }
+
+    const url = (location.pathname + location.search).toLowerCase();
+    const urlRegister = REGISTER_URL_RE.test(url);
+    if (urlRegister) score += 2;
+    if (!urlRegister && LOGIN_URL_RE.test(url)) score -= 1;
+
+    // Wording: the form's own text, or (outside a form) the title,
+    // headings and buttons — not the whole page, which is too noisy.
+    let text;
+    if (form) {
+      text = (form.innerText || "").slice(0, 3000);
+    } else {
+      const bits = [document.title];
+      const els = document.querySelectorAll(
+        'h1, h2, button, input[type="submit"], [role="heading"]'
+      );
+      for (const el of Array.from(els).slice(0, 40)) {
+        bits.push(el.innerText || el.value || "");
+      }
+      text = bits.join(" ").slice(0, 3000);
+    }
+    const textRegister = REGISTER_TEXT_RE.test(text);
+    if (textRegister) score += 2;
+    if (!textRegister && LOGIN_TEXT_RE.test(text)) score -= 2;
+
+    if (REGISTER_TEXT_RE.test(document.title)) score += 1;
+
+    return score >= 2;
+  }
+
   // --- Fill logic --------------------------------------------------------
 
   function fillField(field, value) {
@@ -265,6 +321,7 @@
 
   function showChip(field) {
     if (!settings.bubbleEnabled) return;
+    if (settings.registerOnly && !looksLikeRegisterContext(field)) return;
     // For a field already holding a saved address, this proposes the next
     // address in the list (see sourceEmailFor).
     const alias = aliasFor(field);
