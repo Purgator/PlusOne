@@ -8,6 +8,7 @@ const FLAGS = {
 };
 
 const MENU_ID = "gpa-fill-menu";
+const COPY_ID = "gpa-copy-menu";
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
@@ -64,6 +65,24 @@ function syncContextMenu() {
           });
         });
       }
+
+      // Copy-only entry, on any page or field: for sites where PlusOne
+      // doesn't recognize the email field.
+      chrome.contextMenus.create({
+        id: COPY_ID,
+        title: "Copy Gmail plus alias",
+        contexts: ["all"]
+      });
+      if (list.length > 1) {
+        list.forEach((addr, i) => {
+          chrome.contextMenus.create({
+            id: `${COPY_ID}:${i}`,
+            parentId: COPY_ID,
+            title: addr === email ? `${addr} — main` : addr,
+            contexts: ["all"]
+          });
+        });
+      }
     });
   });
 }
@@ -97,6 +116,14 @@ async function fillTab(tabId, message, frameId) {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (!tab || !tab.id) return;
   const id = String(info.menuItemId);
+  if (id === COPY_ID || id.startsWith(`${COPY_ID}:`)) {
+    const index = id === COPY_ID ? -1 : Number(id.slice(COPY_ID.length + 1));
+    chrome.storage.sync.get(FLAGS, ({ emails }) => {
+      const email = index >= 0 && Array.isArray(emails) ? emails[index] : undefined;
+      fillTab(tab.id, { type: "gpa-copy", email }, info.frameId || 0);
+    });
+    return;
+  }
   if (id === MENU_ID) {
     // Single-address setups: the parent item is directly clickable.
     fillTab(tab.id, { type: "gpa-fill-context" }, info.frameId || 0);
