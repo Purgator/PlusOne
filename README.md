@@ -33,7 +33,7 @@ PlusOne is not on the Chrome Web Store, so you install it manually. It's easier 
 **Step 1 — Download the extension**
 
 - Go to the [**latest release**](https://github.com/Purgator/PlusOne/releases/latest) page.
-- Under **Assets**, click **PlusOne.zip** — it lands in your Downloads folder.
+- Under **Assets**, click **PlusOne-chrome.zip** — it lands in your Downloads folder.
 
 **Step 2 — Unzip it somewhere permanent**
 
@@ -58,11 +58,11 @@ PlusOne is not on the Chrome Web Store, so you install it manually. It's easier 
 
 ## Firefox
 
-PlusOne also works on Firefox (121 or newer). Two things are different there:
+PlusOne also works on Firefox (121 or newer), with its own download (**PlusOne-firefox.zip**). Two things are different there:
 
 **Installing.** Regular Firefox only keeps extensions signed by Mozilla, so until a signed `.xpi` is attached to the releases you can load it temporarily:
 
-1. Download **PlusOne.zip** from the [latest release](https://github.com/Purgator/PlusOne/releases/latest) (no need to unzip).
+1. Download **PlusOne-firefox.zip** from the [latest release](https://github.com/Purgator/PlusOne/releases/latest) (no need to unzip).
 2. Type `about:debugging#/runtime/this-firefox` in the address bar.
 3. Click **Load Temporary Add-on…** and select the ZIP.
 4. ⚠️ Temporary add-ons are removed when Firefox closes — you'll need to redo this after a restart. A permanently installable signed version requires a (free) submission to addons.mozilla.org.
@@ -111,3 +111,11 @@ You can additionally append the year, year+month, or 4 random digits to any styl
 ## License
 
 PlusOne is free software, released under the [GNU General Public License v3.0](LICENSE): you can use, study, share and improve it, and derivative works must stay under the same license.
+
+## Building the release ZIPs
+
+```bash
+node scripts/build.js
+```
+
+Produces `dist/PlusOne-chrome.zip` and `dist/PlusOne-firefox.zip` (no dependencies, Node 22+). The source `manifest.json` carries both browsers' keys so the repo folder loads unpacked anywhere; each ZIP keeps only the keys its browser needs.
