@@ -13,6 +13,7 @@
   const siteSection = document.getElementById("site");
   const aliasEl = document.getElementById("alias");
   const fillBtn = document.getElementById("fill");
+  const copyBtn = document.getElementById("copy");
   const fillStatus = document.getElementById("fill-status");
   const shortcutBtn = document.getElementById("shortcut-btn");
   const patternBox = document.getElementById("pattern-box");
@@ -256,6 +257,18 @@
       setStatus(fillStatus, "No email field found on this page.", "error");
     } else {
       setStatus(fillStatus, "Save your email address first.", "error");
+    }
+  });
+
+  // Copy exactly the alias shown in the preview (stable even with {random}).
+  copyBtn.addEventListener("click", async () => {
+    const alias = aliasEl.textContent;
+    if (!alias) return;
+    try {
+      await navigator.clipboard.writeText(alias);
+      setStatus(fillStatus, `Copied ${alias}`, "ok");
+    } catch {
+      setStatus(fillStatus, "Couldn't access the clipboard.", "error");
     }
   });
 

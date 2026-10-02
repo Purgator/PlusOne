@@ -17,6 +17,7 @@ Gmail (and Google Workspace, including custom domains) ignores everything after 
 - **Keyboard shortcut** — press `Ctrl+Shift+E` on any page to fill the email field. Fully configurable from the popup: click the combination and press the keys you want. Works in Chrome, Vivaldi, Edge, Brave, Firefox… (it's handled in the page, not through Chrome's fragile command bindings).
 - **Cross-browser** — one package for Chrome and any Chromium browser, plus Firefox 121+ (see the Firefox notes below).
 - **Right-click menu** — "Fill with Gmail plus alias" on any input field. Fills exactly the field you right-clicked, even if it doesn't look like an email field, and works inside iframes. With several saved addresses, a submenu lets you pick which one to use.
+- **Copy only** — for sites where PlusOne doesn't recognize the email field: click **Copy alias** in the popup, or right-click anywhere on the page → **Copy Gmail plus alias** (with an address submenu if you have several), then paste it yourself.
 - **Address cycling** — when a field already contains one of your saved addresses (plain or aliased), the bubble and the keyboard shortcut propose the *next* address in the list, so you can flip through your addresses right in the field.
 - **Popup fill button** — the toolbar popup shows a live preview of the alias for the current site and a "Fill" button.
 - **Smart site names** — `www.` and TLDs are stripped, and common suffixes like `.co.uk` are handled: `signup.example.co.uk` → `you+example@...`.

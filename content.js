@@ -183,15 +183,20 @@
     if (settings.copyOnFill) copyToClipboard(value);
   }
 
-  function copyToClipboard(text) {
+  // Resolves to true when the text reached the clipboard.
+  async function copyToClipboard(text) {
     if (navigator.clipboard?.writeText) {
       // Rejects when the document isn't focused (e.g. fill from the popup):
       // fall back to the execCommand path, which the clipboardWrite
       // permission allows without a fresh user gesture.
-      navigator.clipboard.writeText(text).catch(() => execCopy(text));
-    } else {
-      execCopy(text);
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        return execCopy(text);
+      }
     }
+    return execCopy(text);
   }
 
   function execCopy(text) {
@@ -203,12 +208,28 @@
       ta.style.opacity = "0";
       document.body.appendChild(ta);
       ta.select();
-      document.execCommand("copy");
+      const ok = document.execCommand("copy");
       ta.remove();
       if (prevFocus && prevFocus.focus) prevFocus.focus();
+      return ok;
     } catch {
-      /* clipboard unavailable: filling still worked */
+      return false;
     }
+  }
+
+  // Copy-only action (context menu): no field needed, so it works on sites
+  // whose email field PlusOne doesn't recognize.
+  async function copyAlias(overrideEmail) {
+    const source = overrideEmail || settings.email || emailList()[0] || "";
+    const alias = source ? buildAlias(source, location.hostname, settings) : "";
+    if (!alias) return { ok: false, reason: "no-email" };
+    const copied = await copyToClipboard(alias);
+    toast(
+      copied
+        ? `PlusOne: copied ${alias}`
+        : "PlusOne: couldn't access the clipboard."
+    );
+    return { ok: copied, alias };
   }
 
   function flash(field) {
@@ -492,6 +513,12 @@
       const result = fillContextTarget(msg.email);
       if (!result.ok) toastForFailure(result.reason);
       sendResponse(result);
+    } else if (msg && msg.type === "gpa-copy") {
+      copyAlias(msg.email).then((result) => {
+        if (!result.ok && result.reason) toastForFailure(result.reason);
+        sendResponse(result);
+      });
+      return true; // async response
     } else if (msg && msg.type === "gpa-status") {
       sendResponse({
         ok: true,
