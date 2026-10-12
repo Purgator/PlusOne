@@ -217,21 +217,6 @@
     }
   }
 
-  // Copy-only action (context menu): no field needed, so it works on sites
-  // whose email field PlusOne doesn't recognize.
-  async function copyAlias(overrideEmail) {
-    const source = overrideEmail || settings.email || emailList()[0] || "";
-    const alias = source ? buildAlias(source, location.hostname, settings) : "";
-    if (!alias) return { ok: false, reason: "no-email" };
-    const copied = await copyToClipboard(alias);
-    toast(
-      copied
-        ? `PlusOne: copied ${alias}`
-        : "PlusOne: couldn't access the clipboard."
-    );
-    return { ok: copied, alias };
-  }
-
   function flash(field) {
     field.classList.add("gpa-flash");
     setTimeout(() => field.classList.remove("gpa-flash"), 700);
@@ -513,12 +498,6 @@
       const result = fillContextTarget(msg.email);
       if (!result.ok) toastForFailure(result.reason);
       sendResponse(result);
-    } else if (msg && msg.type === "gpa-copy") {
-      copyAlias(msg.email).then((result) => {
-        if (!result.ok && result.reason) toastForFailure(result.reason);
-        sendResponse(result);
-      });
-      return true; // async response
     } else if (msg && msg.type === "gpa-status") {
       sendResponse({
         ok: true,
