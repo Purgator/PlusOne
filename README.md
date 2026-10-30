@@ -110,7 +110,7 @@ You can additionally append the year, year+month, or 4 random digits to any styl
 
 ## License
 
-PlusOne is free software, released under the [GNU General Public License v3.0](LICENSE): you can use, study, share and improve it, and derivative works must stay under the same license.
+PlusOne is free software, released under the [GNU General Public License v3.0 or later](LICENSE) (`GPL-3.0-or-later`): you can use, study, share and improve it, and derivative works must stay under the same license.
 
 ## Building the release ZIPs
 
