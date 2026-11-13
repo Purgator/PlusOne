@@ -8,6 +8,8 @@ A Chrome extension that fills sign-up email fields with a **Gmail plus alias** b
 
 Gmail (and Google Workspace, including custom domains) ignores everything after the `+`, so all these aliases land in your normal inbox — but you can instantly see who leaked or sold your address, and filter each sender.
 
+![A sign-up form with the email field focused and the PlusOne bubble under it, offering jane.doe+brightcart@gmail.com](docs/bubble.png)
+
 ## Features
 
 - **One-time setup** — enter your email once in the popup. Works with `@gmail.com` or any custom domain handled by Gmail.
@@ -25,6 +27,11 @@ Gmail (and Google Workspace, including custom domains) ignores everything after 
 - **Configurable** — every trigger can be toggled, and the alias format is fully customizable (see below).
 - Works with React/Vue/Angular forms (events are dispatched so the framework registers the value).
 - Your email is stored in Chrome sync storage only. No network requests, no tracking.
+
+| | | |
+|---|---|---|
+| ![The sign-up form after one click on the bubble: the email field holds jane.doe+brightcart@gmail.com](docs/filled.png) | ![The PlusOne popup: two saved addresses with the main one selected, the alias for the current site, and the Fill and Copy alias buttons](docs/popup.png) | ![The Alias format options with a custom pattern {name}-{year} and its live example](docs/options.png) |
+| One click on the bubble and the field is filled. | The popup: your addresses, the alias for the current site, fill or copy. | The alias format, with a live example. |
 
 ## How to install (5 minutes, no technical skills needed)
 
